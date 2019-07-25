@@ -34,7 +34,7 @@ function getUrl(page: number): string {
     page,
     per_page: PER_PAGE,
     incident_type: INCIDENT_TYPE,
-    proximity: PROXIMITY,
+    proximity: encodeURIComponent(PROXIMITY),
     proximity_square: PROXIMITY_SQUARE,
   };
   const paramsStr = (Object.keys(params) as Array<keyof typeof params>)
@@ -49,7 +49,7 @@ const api = {
     return fetch(getUrl(page))
       .then((res) => {
         if (!res.ok) {
-          throw new Error(res.status.toString());
+          throw res;
         }
 
         return res.json()

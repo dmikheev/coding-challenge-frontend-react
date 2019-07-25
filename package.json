@@ -32,5 +32,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/fetch-mock": "^7.3.1",
+    "fetch-mock": "^7.3.9",
+    "node-fetch": "^2.6.0"
   }
 }
