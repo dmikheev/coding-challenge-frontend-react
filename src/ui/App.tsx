@@ -1,7 +1,8 @@
 import { CssBaseline } from '@material-ui/core';
 import React from 'react';
+import { BrowserRouter, Route } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
-import IncidentsPage from './incidentsPage/IncidentsPage';
+import IncidentsPageContainer from './incidentsPage/IncidentsPageContainer';
 import logo from './logo.svg';
 
 const GlobalStyle = createGlobalStyle`
@@ -23,7 +24,9 @@ const App: React.FC = () => (
     <GlobalStyle/>
     <div>
       <Header/>
-      <IncidentsPage/>
+      <BrowserRouter>
+        <Route component={IncidentsPageContainer}/>
+      </BrowserRouter>
     </div>
   </React.Fragment>
 );
@@ -35,7 +38,6 @@ const Header: React.FC = () => (
     <div>Stolen bikes</div>
   </header>
 );
-
 const LogoImage = styled.img`
     height: 50px;
 `;
