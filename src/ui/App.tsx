@@ -1,43 +1,63 @@
-import { CssBaseline } from '@material-ui/core';
+import { CssBaseline, Typography } from '@material-ui/core';
+import { grey } from '@material-ui/core/colors';
+import { StylesProvider } from '@material-ui/styles';
 import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, css } from 'styled-components';
 import IncidentsPageContainer from './incidentsPage/IncidentsPageContainer';
 import logo from './logo.svg';
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
-
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
 `;
 
 const App: React.FC = () => (
   <React.Fragment>
-    <CssBaseline/>
-    <GlobalStyle/>
-    <div>
-      <Header/>
-      <BrowserRouter>
-        <Route component={IncidentsPageContainer}/>
-      </BrowserRouter>
-    </div>
+    <StylesProvider injectFirst={true}>
+      <CssBaseline/>
+      <GlobalStyle/>
+      <div>
+        <Header/>
+        <BrowserRouter>
+          <Route component={StyledIncidentsPageContainer}/>
+        </BrowserRouter>
+      </div>
+    </StylesProvider>
   </React.Fragment>
 );
 export default App;
 
+const pageContentStyles = css`
+  margin: 0 auto;
+  width: 1140px;
+`;
+
 const Header: React.FC = () => (
-  <header>
-    <LogoImage src={logo} alt="logo"/>
-    <div>Stolen bikes</div>
-  </header>
+  <StyledHeader>
+    <HeaderContentWrap>
+      <LogoImage src={logo} alt="logo"/>
+      <HeaderText variant="h2">Stolen bikes</HeaderText>
+    </HeaderContentWrap>
+  </StyledHeader>
 );
+const StyledHeader = styled.header`
+  padding: 10px 0;
+  background-color: ${grey[300]};
+`;
+const HeaderContentWrap = styled.div`
+  ${pageContentStyles};
+  display: flex;
+  align-items: center;
+`;
 const LogoImage = styled.img`
-    height: 50px;
+  margin: 0 -10px 0 -20px;
+  height: 80px;
+`;
+const HeaderText = styled(Typography)`
+  font-weight: 500;
+`;
+
+const StyledIncidentsPageContainer = styled(IncidentsPageContainer)`
+  ${pageContentStyles};
+  padding: 20px 0 40px;
 `;

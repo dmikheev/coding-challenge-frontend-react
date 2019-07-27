@@ -5,6 +5,9 @@ import api, { IGetIncidentsInput, IGetIncidentsResponseResult } from '../../api/
 import { IFiltersState } from './dataTypes';
 import IncidentsPage from './IncidentsPage';
 
+interface IIncidentsPageContainerProps extends RouteComponentProps {
+  className?: string;
+}
 interface IIncidentsPageContainerState {
   isError: boolean;
   isLoading: boolean;
@@ -12,7 +15,7 @@ interface IIncidentsPageContainerState {
 }
 
 export default class IncidentsPageContainer
-  extends React.PureComponent<RouteComponentProps, IIncidentsPageContainerState> {
+  extends React.PureComponent<IIncidentsPageContainerProps, IIncidentsPageContainerState> {
 
   public state = {
     isError: false,
@@ -31,18 +34,19 @@ export default class IncidentsPageContainer
   }
 
   public render() {
-    const { location } = this.props;
+    const { className, location } = this.props;
     const { isError, isLoading, incidentsData } = this.state;
 
     const filterParams = getRequestParamsFromQueryString(location.search);
     const filtersState: IFiltersState = {
-      dateFrom: filterParams.dateFrom ? moment(filterParams.dateFrom * 1000) : null,
-      dateTo: filterParams.dateTo ? moment(filterParams.dateTo * 1000) : null,
+      dateFrom: filterParams.dateFrom ? moment(filterParams.dateFrom) : null,
+      dateTo: filterParams.dateTo ? moment(filterParams.dateTo) : null,
       query: filterParams.query || '',
     };
 
     return (
       <IncidentsPage
+        className={className}
         activePage={filterParams.page}
         defaultFiltersState={filtersState}
         isError={isError}
@@ -55,7 +59,17 @@ export default class IncidentsPageContainer
   }
 
   private readonly onFilterChange = (filtersState: IFiltersState) => {
-    const { history } = this.props;
+    const { history, location } = this.props;
+    const oldRequestParams = getRequestParamsFromQueryString(location.search);
+    const newRequestParams = getRequestParamsFromFiltersState(filtersState);
+    if (
+      oldRequestParams.query === newRequestParams.query &&
+      oldRequestParams.dateFrom === newRequestParams.dateFrom &&
+      oldRequestParams.dateTo === newRequestParams.dateTo
+    ) {
+      return;
+    }
+
     history.push(`/${getQueryStringFromFiltersState(filtersState)}`);
   };
 
@@ -68,11 +82,6 @@ export default class IncidentsPageContainer
 
   private fetchData(): void {
     const { location } = this.props;
-    const { isLoading } = this.state;
-    if (isLoading) {
-      return;
-    }
-
     const queryString = location.search;
 
     this.setState({ isLoading: true });
@@ -83,7 +92,8 @@ export default class IncidentsPageContainer
           return;
         }
 
-        this.setState({ isLoading: false, isError: false, incidentsData: res })
+        this.setState({ isLoading: false, isError: false, incidentsData: res });
+        window.scrollTo(window.scrollX, 0);
       })
       .catch(() => {
         const newQueryString = this.props.location.search;
@@ -91,30 +101,35 @@ export default class IncidentsPageContainer
           return;
         }
 
-        this.setState({ isError: true, isLoading: false })
+        this.setState({ isError: true, isLoading: false });
       });
   }
 }
 
 function getQueryStringFromFiltersState(filtersState: IFiltersState): string {
-  const dateFromParamValue = filtersState.dateFrom ? filtersState.dateFrom.unix() : undefined;
-  const dateToParamValue = filtersState.dateTo ? filtersState.dateTo.unix() : undefined;
-  const queryParamValue = filtersState.query;
+  const requestParams = getRequestParamsFromFiltersState(filtersState);
 
   const queryParams = new URLSearchParams();
-  if (dateFromParamValue) {
-    queryParams.set('dateFrom', dateFromParamValue.toString());
+  if (requestParams.dateFrom) {
+    queryParams.set('dateFrom', requestParams.dateFrom.toString());
   }
-  if (dateToParamValue) {
-    queryParams.set('dateTo', dateToParamValue.toString());
+  if (requestParams.dateTo) {
+    queryParams.set('dateTo', requestParams.dateTo.toString());
   }
-  if (queryParamValue) {
-    queryParams.set('query', queryParamValue);
+  if (requestParams.query) {
+    queryParams.set('query', requestParams.query);
   }
 
   const paramsStr = queryParams.toString();
-
   return !!paramsStr ? `?${paramsStr}` : '';
+}
+
+function getRequestParamsFromFiltersState(filtersState: IFiltersState): IGetIncidentsInput {
+  return {
+    dateFrom: filtersState.dateFrom ? filtersState.dateFrom.valueOf() : undefined,
+    dateTo: filtersState.dateTo ? filtersState.dateTo.valueOf() : undefined,
+    query: filtersState.query || undefined,
+  };
 }
 
 function getRequestParamsFromQueryString(queryString: string): IGetIncidentsInput {

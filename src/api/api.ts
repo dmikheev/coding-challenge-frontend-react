@@ -41,8 +41,8 @@ function getUrl(inputParams: IGetIncidentsInput): string {
   const params = {
     page: inputParams.page,
     query: inputParams.query ? encodeURIComponent(inputParams.query) : undefined,
-    occurred_before: inputParams.dateTo,
-    occurred_after: inputParams.dateFrom,
+    occurred_before: inputParams.dateTo ? Math.floor(inputParams.dateTo / 1000) : undefined,
+    occurred_after: inputParams.dateFrom ? Math.floor(inputParams.dateFrom / 1000) : undefined,
     per_page: Constants.ITEMS_PER_PAGE,
     incident_type: INCIDENT_TYPE,
     proximity: encodeURIComponent(PROXIMITY),
@@ -67,7 +67,11 @@ const api = {
         return res.json()
           .then((responseJson: IGetIncidentsRawResponse) => {
             return {
-              incidents: responseJson.incidents,
+              incidents: responseJson.incidents.map((incident) => ({
+                ...incident,
+                occurred_at: incident.occurred_at * 1000,
+                updated_at: incident.updated_at * 1000,
+              })),
               total: Number(res.headers.get('total')),
             };
           });

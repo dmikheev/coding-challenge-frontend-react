@@ -2,10 +2,12 @@ import { Button, FormControl, InputLabel, OutlinedInput } from '@material-ui/cor
 import { KeyboardDatePicker, KeyboardDatePickerProps } from '@material-ui/pickers';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import React, { ChangeEvent } from 'react';
+import styled from 'styled-components';
 import { KeyCode } from '../../../constants/keyCodes';
 import { IFiltersState } from '../dataTypes';
 
 interface IFiltersProps {
+  className?: string;
   filtersState: IFiltersState;
   onQueryChange(event: ChangeEvent<HTMLInputElement>): void;
   onDateFromChange(date: MaterialUiPickersDate | null): void;
@@ -13,6 +15,7 @@ interface IFiltersProps {
   onSearchClick(): void;
 }
 const Filters: React.FC<IFiltersProps> = ({
+  className,
   filtersState,
   onQueryChange,
   onDateFromChange,
@@ -22,12 +25,13 @@ const Filters: React.FC<IFiltersProps> = ({
   const onInputKeyPress = React.useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.which === KeyCode.ENTER) {
       onSearchClick();
+      (event.target as HTMLInputElement).blur();
     }
   }, [onSearchClick]);
 
   return (
-    <div>
-      <FormControl variant="outlined">
+    <StyledWrap className={className}>
+      <StyledQueryFormControl variant="outlined">
         <InputLabel>Search case by title</InputLabel>
         <OutlinedInput
           labelWidth={141}
@@ -35,7 +39,7 @@ const Filters: React.FC<IFiltersProps> = ({
           onChange={onQueryChange}
           onKeyPress={onInputKeyPress}
         />
-      </FormControl>
+      </StyledQueryFormControl>
       <DatePicker
         label="Date from"
         value={filtersState.dateFrom}
@@ -48,13 +52,26 @@ const Filters: React.FC<IFiltersProps> = ({
         onChange={onDateToChange}
         onKeyPress={onInputKeyPress}
       />
-      <Button onClick={onSearchClick}>
+      <Button variant="contained" color="primary" onClick={onSearchClick}>
         Find cases
       </Button>
-    </div>
+    </StyledWrap>
   );
 };
 export default Filters;
+
+const StyledWrap = styled.div`
+  display: flex;
+  align-items: center;
+  
+  & > *:not(:last-child) {
+    margin-right: 20px;
+  } 
+`;
+
+const StyledQueryFormControl = styled(FormControl)`
+  flex-grow: 1;
+`;
 
 const DatePicker: React.FC<KeyboardDatePickerProps> = (props) => (
   <KeyboardDatePicker autoOk={true} format="L" inputVariant="outlined" variant="inline" {...props}/>

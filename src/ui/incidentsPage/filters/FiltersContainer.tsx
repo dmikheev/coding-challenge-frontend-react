@@ -4,10 +4,15 @@ import { IFiltersState } from '../dataTypes';
 import Filters from './Filters';
 
 interface IFiltersContainerProps {
+  className?: string;
   defaultFiltersState: IFiltersState;
   onChange(filtersState: IFiltersState): void;
 }
-const FiltersContainer: React.FC<IFiltersContainerProps> = ({ defaultFiltersState, onChange }) => {
+const FiltersContainer: React.FC<IFiltersContainerProps> = ({
+  className,
+  defaultFiltersState,
+  onChange,
+}) => {
   const [state, setState] = React.useState<IFiltersState>({
     dateFrom: defaultFiltersState.dateFrom,
     dateTo: defaultFiltersState.dateTo,
@@ -31,6 +36,7 @@ const FiltersContainer: React.FC<IFiltersContainerProps> = ({ defaultFiltersStat
 
   return (
     <Filters
+      className={className}
       filtersState={state}
       onQueryChange={onQueryChange}
       onDateFromChange={onDateFromChange}
