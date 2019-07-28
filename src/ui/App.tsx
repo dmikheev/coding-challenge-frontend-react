@@ -16,12 +16,10 @@ const App: React.FC = () => (
     <StylesProvider injectFirst={true}>
       <CssBaseline/>
       <GlobalStyle/>
-      <div>
-        <Header/>
-        <BrowserRouter>
-          <Route component={StyledIncidentsPageContainer}/>
-        </BrowserRouter>
-      </div>
+      <Header/>
+      <BrowserRouter>
+        <Route component={StyledIncidentsPageContainer}/>
+      </BrowserRouter>
     </StylesProvider>
   </React.Fragment>
 );

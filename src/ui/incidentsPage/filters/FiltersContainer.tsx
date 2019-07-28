@@ -1,22 +1,23 @@
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import { Moment } from 'moment';
 import React, { ChangeEvent } from 'react';
-import { IFiltersState } from '../dataTypes';
+import { IFilterComponentState } from '../dataTypes';
 import Filters from './Filters';
 
 interface IFiltersContainerProps {
   className?: string;
-  defaultFiltersState: IFiltersState;
-  onChange(filtersState: IFiltersState): void;
+  appliedFiltersState: IFilterComponentState;
+  onLoadData(filtersState: IFilterComponentState): void;
 }
 const FiltersContainer: React.FC<IFiltersContainerProps> = ({
   className,
-  defaultFiltersState,
-  onChange,
+  appliedFiltersState,
+  onLoadData,
 }) => {
-  const [state, setState] = React.useState<IFiltersState>({
-    dateFrom: defaultFiltersState.dateFrom,
-    dateTo: defaultFiltersState.dateTo,
-    query: defaultFiltersState.query,
+  const [state, setState] = React.useState<IFilterComponentState>({
+    dateFrom: appliedFiltersState.dateFrom,
+    dateTo: appliedFiltersState.dateTo,
+    query: appliedFiltersState.query,
   });
   const onQueryChange = React.useCallback((event: ChangeEvent<HTMLInputElement>) => setState({
     ...state,
@@ -30,9 +31,17 @@ const FiltersContainer: React.FC<IFiltersContainerProps> = ({
     ...state,
     dateTo: date,
   }), [state]);
+
+  const onInputEnterPress = React.useCallback(() => {
+    if (areFilterStatesEqual(appliedFiltersState, state)) {
+      return;
+    }
+
+    onLoadData(state);
+  }, [appliedFiltersState, state, onLoadData]);
   const onButtonClick = React.useCallback(() => {
-    onChange(state);
-  }, [state, onChange]);
+    onLoadData(state);
+  }, [state, onLoadData]);
 
   return (
     <Filters
@@ -41,8 +50,25 @@ const FiltersContainer: React.FC<IFiltersContainerProps> = ({
       onQueryChange={onQueryChange}
       onDateFromChange={onDateFromChange}
       onDateToChange={onDateToChange}
-      onSearchClick={onButtonClick}
+      onInputEnterPress={onInputEnterPress}
+      onSearchButtonClick={onButtonClick}
     />
   );
 };
 export default FiltersContainer;
+
+function areFilterStatesEqual(a: IFilterComponentState, b: IFilterComponentState): boolean {
+  return a.query === b.query &&
+    areDatesEqual(a.dateFrom, b.dateFrom) &&
+    areDatesEqual(a.dateTo, b.dateTo);
+}
+function areDatesEqual(a: Moment | null, b: Moment | null): boolean {
+  if (a === b) {
+    return true;
+  }
+  if (a === null || b === null) {
+    return false;
+  }
+
+  return a.isSame(b);
+}

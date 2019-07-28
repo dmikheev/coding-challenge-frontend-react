@@ -2,122 +2,153 @@ import moment from 'moment';
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import api, { IGetIncidentsInput, IGetIncidentsResponseResult } from '../../api/api';
-import { IFiltersState } from './dataTypes';
+import { areObjectsShallowEqual } from '../../utils/shallowEqual';
+import { IFilterComponentState, IFiltersState } from './dataTypes';
 import IncidentsPage from './IncidentsPage';
 
 interface IIncidentsPageContainerProps extends RouteComponentProps {
   className?: string;
 }
 interface IIncidentsPageContainerState {
+  appliedFilters: IFiltersState;
   isError: boolean;
   isLoading: boolean;
+  isFirstLoadDone: boolean;
   incidentsData: IGetIncidentsResponseResult | null;
 }
 
 export default class IncidentsPageContainer
   extends React.PureComponent<IIncidentsPageContainerProps, IIncidentsPageContainerState> {
 
-  public state = {
-    isError: false,
-    isLoading: false,
-    incidentsData: null,
-  };
+  constructor(props: IIncidentsPageContainerProps) {
+    super(props);
 
-  public componentDidMount(): void {
-    this.fetchData();
+    this.state = {
+      appliedFilters: getFiltersStateFromQueryString(props.location.search),
+      isError: false,
+      isLoading: false,
+      isFirstLoadDone: false,
+      incidentsData: null,
+    };
   }
 
-  public componentDidUpdate(prevProps: RouteComponentProps): void {
-    if (this.props.location.search !== prevProps.location.search) {
-      this.fetchData();
+  public componentDidMount(): void {
+    const { appliedFilters } = this.state;
+    this.fetchData(appliedFilters);
+  }
+
+  public componentDidUpdate(
+    prevProps: Readonly<IIncidentsPageContainerProps>,
+    prevState: Readonly<IIncidentsPageContainerState>,
+    snapshot?: any,
+  ): void {
+    const { history } = this.props;
+    const { appliedFilters: newFiltersState } = this.state;
+
+    if (newFiltersState !== prevState.appliedFilters) {
+      history.push(`/${getQueryStringFromFiltersState(newFiltersState)}`);
     }
   }
 
   public render() {
-    const { className, location } = this.props;
-    const { isError, isLoading, incidentsData } = this.state;
+    const { className } = this.props;
+    const { appliedFilters, isError, isLoading, isFirstLoadDone, incidentsData } = this.state;
 
-    const filterParams = getRequestParamsFromQueryString(location.search);
-    const filtersState: IFiltersState = {
-      dateFrom: filterParams.dateFrom ? moment(filterParams.dateFrom) : null,
-      dateTo: filterParams.dateTo ? moment(filterParams.dateTo) : null,
-      query: filterParams.query || '',
+    const filtersComponentState: IFilterComponentState = {
+      dateFrom: appliedFilters.dateFrom,
+      dateTo: appliedFilters.dateTo,
+      query: appliedFilters.query,
     };
 
     return (
       <IncidentsPage
         className={className}
-        activePage={filterParams.page}
-        defaultFiltersState={filtersState}
+        activePage={appliedFilters.page}
+        appliedFiltersState={filtersComponentState}
         isError={isError}
         isLoading={isLoading}
+        isFirstLoadDone={isFirstLoadDone}
         pageData={incidentsData}
-        onFilterChange={this.onFilterChange}
+        onFilterLoadData={this.onFilterLoadData}
         onPageChange={this.onPageChange}
       />
     );
   }
 
-  private readonly onFilterChange = (filtersState: IFiltersState) => {
-    const { history, location } = this.props;
-    const oldRequestParams = getRequestParamsFromQueryString(location.search);
-    const newRequestParams = getRequestParamsFromFiltersState(filtersState);
-    if (
-      oldRequestParams.query === newRequestParams.query &&
-      oldRequestParams.dateFrom === newRequestParams.dateFrom &&
-      oldRequestParams.dateTo === newRequestParams.dateTo
-    ) {
-      return;
-    }
-
-    history.push(`/${getQueryStringFromFiltersState(filtersState)}`);
+  private readonly onFilterLoadData = (filtersState: IFilterComponentState) => {
+    this.setState({
+      appliedFilters: filtersState,
+    });
+    this.fetchData(filtersState);
   };
 
   private readonly onPageChange = (page: number) => {
-    const { history, location } = this.props;
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.set('page', page.toString());
-    history.push(`/?${queryParams.toString()}`);
+    const { appliedFilters } = this.state;
+    const newFiltersState = {
+      ...appliedFilters,
+      page,
+    };
+    this.setState({
+      appliedFilters: newFiltersState,
+    });
+    this.fetchData(newFiltersState);
   };
 
-  private fetchData(): void {
-    const { location } = this.props;
-    const queryString = location.search;
-
+  private fetchData(requestFiltersState: IFiltersState): void {
     this.setState({ isLoading: true });
-    api.getIncidents(getRequestParamsFromQueryString(queryString))
+    api.getIncidents(getRequestParamsFromFiltersState(requestFiltersState))
       .then((res) => {
-        const newQueryString = this.props.location.search;
-        if (newQueryString !== queryString) {
+        const { appliedFilters: newFiltersState } = this.state;
+        if (!areFilterStatesEqual(requestFiltersState, newFiltersState)) {
           return;
         }
 
-        this.setState({ isLoading: false, isError: false, incidentsData: res });
+        this.setState({
+          isLoading: false,
+          isError: false,
+          isFirstLoadDone: true,
+          incidentsData: res,
+        });
         window.scrollTo(window.scrollX, 0);
       })
       .catch(() => {
-        const newQueryString = this.props.location.search;
-        if (newQueryString !== queryString) {
+        const { appliedFilters: newFiltersState } = this.state;
+        if (!areFilterStatesEqual(requestFiltersState, newFiltersState)) {
           return;
         }
 
-        this.setState({ isError: true, isLoading: false });
+        this.setState({ isError: true, isLoading: false, isFirstLoadDone: true });
       });
   }
 }
 
-function getQueryStringFromFiltersState(filtersState: IFiltersState): string {
-  const requestParams = getRequestParamsFromFiltersState(filtersState);
+function getFiltersStateFromQueryString(queryString: string): IFiltersState {
+  const queryParams = new URLSearchParams(queryString);
+  const pageParamValue = queryParams.get('page');
+  const queryParamValue = queryParams.get('query');
+  const dateFromParamValue = queryParams.get('dateFrom');
+  const dateToParamValue = queryParams.get('dateTo');
+  return {
+    page: pageParamValue ? Number(pageParamValue) : undefined,
+    query: queryParamValue ? decodeURIComponent(queryParamValue) : '',
+    dateFrom: dateFromParamValue ? moment(dateFromParamValue) : null,
+    dateTo: dateToParamValue ? moment(dateToParamValue) : null,
+  };
+}
 
+function getQueryStringFromFiltersState(filtersState: IFiltersState): string {
   const queryParams = new URLSearchParams();
-  if (requestParams.dateFrom) {
-    queryParams.set('dateFrom', requestParams.dateFrom.toString());
+  if (filtersState.query) {
+    queryParams.set('query', filtersState.query);
   }
-  if (requestParams.dateTo) {
-    queryParams.set('dateTo', requestParams.dateTo.toString());
+  if (filtersState.dateFrom) {
+    queryParams.set('dateFrom', filtersState.dateFrom.valueOf().toString());
   }
-  if (requestParams.query) {
-    queryParams.set('query', requestParams.query);
+  if (filtersState.dateTo) {
+    queryParams.set('dateTo', filtersState.dateTo.valueOf().toString());
+  }
+  if (filtersState.page) {
+    queryParams.set('page', filtersState.page.toString())
   }
 
   const paramsStr = queryParams.toString();
@@ -128,22 +159,14 @@ function getRequestParamsFromFiltersState(filtersState: IFiltersState): IGetInci
   return {
     dateFrom: filtersState.dateFrom ? filtersState.dateFrom.valueOf() : undefined,
     dateTo: filtersState.dateTo ? filtersState.dateTo.valueOf() : undefined,
+    page: filtersState.page || 1,
     query: filtersState.query || undefined,
   };
 }
 
-function getRequestParamsFromQueryString(queryString: string): IGetIncidentsInput {
-  const queryParams = new URLSearchParams(queryString);
-  const pageParamValue = queryParams.get('page');
-  const incidentTextQueryParamValue = queryParams.get('query');
-  const dateFromParamValue = queryParams.get('dateFrom');
-  const dateToParamValue = queryParams.get('dateTo');
-  return {
-    page: pageParamValue ? Number(pageParamValue) : undefined,
-    query: incidentTextQueryParamValue ?
-      decodeURIComponent(incidentTextQueryParamValue) :
-      undefined,
-    dateFrom: dateFromParamValue ? Number(dateFromParamValue) : undefined,
-    dateTo: dateToParamValue ? Number(dateToParamValue) : undefined,
-  };
+function areFilterStatesEqual(a: IFiltersState, b: IFiltersState): boolean {
+  const aRequestParams = getRequestParamsFromFiltersState(a);
+  const bRequestParams = getRequestParamsFromFiltersState(b);
+
+  return areObjectsShallowEqual(aRequestParams, bRequestParams);
 }

@@ -4,15 +4,16 @@ import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
 import { KeyCode } from '../../../constants/keyCodes';
-import { IFiltersState } from '../dataTypes';
+import { IFilterComponentState } from '../dataTypes';
 
 interface IFiltersProps {
   className?: string;
-  filtersState: IFiltersState;
+  filtersState: IFilterComponentState;
   onQueryChange(event: ChangeEvent<HTMLInputElement>): void;
   onDateFromChange(date: MaterialUiPickersDate | null): void;
   onDateToChange(date: MaterialUiPickersDate | null): void;
-  onSearchClick(): void;
+  onInputEnterPress(): void;
+  onSearchButtonClick(): void;
 }
 const Filters: React.FC<IFiltersProps> = ({
   className,
@@ -20,14 +21,15 @@ const Filters: React.FC<IFiltersProps> = ({
   onQueryChange,
   onDateFromChange,
   onDateToChange,
-  onSearchClick,
+  onInputEnterPress,
+  onSearchButtonClick,
 }) => {
   const onInputKeyPress = React.useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.which === KeyCode.ENTER) {
-      onSearchClick();
+      onInputEnterPress();
       (event.target as HTMLInputElement).blur();
     }
-  }, [onSearchClick]);
+  }, [onInputEnterPress]);
 
   return (
     <StyledWrap className={className}>
@@ -52,7 +54,7 @@ const Filters: React.FC<IFiltersProps> = ({
         onChange={onDateToChange}
         onKeyPress={onInputKeyPress}
       />
-      <Button variant="contained" color="primary" onClick={onSearchClick}>
+      <Button variant="contained" color="primary" onClick={onSearchButtonClick}>
         Find cases
       </Button>
     </StyledWrap>
