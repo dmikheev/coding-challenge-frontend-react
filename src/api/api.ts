@@ -39,7 +39,7 @@ const PROXIMITY_SQUARE = 50;
 
 function getUrl(inputParams: IGetIncidentsInput): string {
   const params = {
-    page: inputParams.page,
+    page: inputParams.page || 1,
     query: inputParams.query ? encodeURIComponent(inputParams.query) : undefined,
     occurred_before: inputParams.dateTo ? Math.floor(inputParams.dateTo / 1000) : undefined,
     occurred_after: inputParams.dateFrom ? Math.floor(inputParams.dateFrom / 1000) : undefined,

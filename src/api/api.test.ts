@@ -1,5 +1,5 @@
 import fetchMock from 'fetch-mock';
-import api from './api';
+import api, { IGetIncidentsInput } from './api';
 
 describe('API', () => {
   afterEach(() => {
@@ -14,15 +14,44 @@ describe('API', () => {
 
     await api.getIncidents();
     expect(fetchMock.calls()).toHaveLength(1);
-    expect(fetchMock.lastUrl()).toBe(`https://cors-anywhere.herokuapp.com/https://bikewise.org:443/api/v2/incidents?page=1&per_page=10&incident_type=theft&proximity=${encodeURIComponent('Berlin, DE')}&proximity_square=50`);
 
-    await api.getIncidents(3);
+    const firstCallUrlStr = fetchMock.lastUrl();
+    expect(firstCallUrlStr).toBeTruthy();
+    const firstCallUrl = new URL(fetchMock.lastUrl()!);
+    expect(firstCallUrl.origin).toBe('https://cors-anywhere.herokuapp.com');
+    expect(firstCallUrl.pathname).toBe('/https://bikewise.org:443/api/v2/incidents');
+    expect(firstCallUrl.searchParams.get('page')).toBe('1');
+    expect(firstCallUrl.searchParams.get('per_page')).toBe('10');
+    expect(firstCallUrl.searchParams.get('incident_type')).toBe('theft');
+    expect(firstCallUrl.searchParams.get('proximity')).toBe('Berlin, DE');
+    expect(firstCallUrl.searchParams.get('proximity_square')).toBe('50');
+
+    const secondCallParams: IGetIncidentsInput = {
+      page: 3,
+      query: 'bike',
+      dateFrom: new Date(2019, 6, 2).getTime(),
+      dateTo: new Date(2019, 6, 29).getTime(),
+    };
+    await api.getIncidents(secondCallParams);
     expect(fetchMock.calls()).toHaveLength(2);
-    expect(fetchMock.lastUrl()).toBe(`https://cors-anywhere.herokuapp.com/https://bikewise.org:443/api/v2/incidents?page=3&per_page=10&incident_type=theft&proximity=${encodeURIComponent('Berlin, DE')}&proximity_square=50`)
+
+    const secondCallUrlStr = fetchMock.lastUrl();
+    expect(secondCallUrlStr).toBeTruthy();
+    const secondCallUrl = new URL(fetchMock.lastUrl()!);
+    expect(secondCallUrl.origin).toBe('https://cors-anywhere.herokuapp.com');
+    expect(secondCallUrl.pathname).toBe('/https://bikewise.org:443/api/v2/incidents');
+    expect(secondCallUrl.searchParams.get('page')).toBe(secondCallParams.page!.toString());
+    expect(secondCallUrl.searchParams.get('query')).toBe(secondCallParams.query);
+    expect(secondCallUrl.searchParams.get('occurred_after')).toBe((secondCallParams.dateFrom! / 1000).toString());
+    expect(secondCallUrl.searchParams.get('occurred_before')).toBe((secondCallParams.dateTo! / 1000).toString());
+    expect(secondCallUrl.searchParams.get('per_page')).toBe('10');
+    expect(secondCallUrl.searchParams.get('incident_type')).toBe('theft');
+    expect(secondCallUrl.searchParams.get('proximity')).toBe('Berlin, DE');
+    expect(secondCallUrl.searchParams.get('proximity_square')).toBe('50');
   });
 
   it('resolves with the response json on success', async () => {
-    const incidents = [{
+    const responseIncident = {
       id: 104057,
       title: 'Stolen 2018 Intec M05(green)',
       description: '',
@@ -35,7 +64,14 @@ describe('API', () => {
       media: {
         image_url_thumb: 'https://files.bikeindex.org/uploads/Pu/171073/small_IntecM05.png',
       },
-    }];
+    };
+    const resultIncident = {
+      ...responseIncident,
+      occurred_at: responseIncident.occurred_at * 1000,
+      updated_at: responseIncident.updated_at * 1000,
+    };
+
+    const incidents = [responseIncident];
     fetchMock.get('*', {
       body: { incidents },
       headers: { total: '1' },
@@ -44,7 +80,7 @@ describe('API', () => {
     const result = await api.getIncidents();
     expect(fetchMock.calls()).toHaveLength(1);
     expect(result).toStrictEqual({
-      incidents,
+      incidents: [resultIncident],
       total: 1,
     });
   });
