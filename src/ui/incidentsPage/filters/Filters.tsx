@@ -3,10 +3,10 @@ import { KeyboardDatePicker, KeyboardDatePickerProps } from '@material-ui/picker
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
-import { KeyCode } from '../../../constants/keyCodes';
+import { KeyValues } from '../../../constants/keyValues';
 import { IFilterComponentState } from '../dataTypes';
 
-interface IFiltersProps {
+export interface IFiltersProps {
   className?: string;
   filtersState: IFilterComponentState;
   onQueryChange(event: ChangeEvent<HTMLInputElement>): void;
@@ -25,7 +25,7 @@ const Filters: React.FC<IFiltersProps> = ({
   onSearchButtonClick,
 }) => {
   const onInputKeyPress = React.useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.which === KeyCode.ENTER) {
+    if (event.key === KeyValues.ENTER) {
       onInputEnterPress();
       (event.target as HTMLInputElement).blur();
     }
