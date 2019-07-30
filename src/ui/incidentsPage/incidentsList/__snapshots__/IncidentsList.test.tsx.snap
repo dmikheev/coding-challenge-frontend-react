@@ -17,12 +17,12 @@ exports[`renders correctly 1`] = `
         "media": Object {
           "image_url_thumb": "https://test.com/bike/1/photo.jpg",
         },
-        "occurred_at": 1546290000000,
+        "occurred_at": 1546300800000,
         "source": Object {
           "html_url": "https://test.com/bike/1",
         },
         "title": "Test title 1",
-        "updated_at": 1548968400000,
+        "updated_at": 1548979200000,
       }
     }
     key="1"
@@ -36,12 +36,12 @@ exports[`renders correctly 1`] = `
         "media": Object {
           "image_url_thumb": "https://test.com/bike/2/photo.jpg",
         },
-        "occurred_at": 1546376400000,
+        "occurred_at": 1546387200000,
         "source": Object {
           "html_url": "https://test.com/bike/2",
         },
         "title": "Test title 2",
-        "updated_at": 1549054800000,
+        "updated_at": 1549065600000,
       }
     }
     key="2"
@@ -55,12 +55,12 @@ exports[`renders correctly 1`] = `
         "media": Object {
           "image_url_thumb": "https://test.com/bike/3/photo.jpg",
         },
-        "occurred_at": 1546462800000,
+        "occurred_at": 1546473600000,
         "source": Object {
           "html_url": "https://test.com/bike/3",
         },
         "title": "Test title 3",
-        "updated_at": 1549141200000,
+        "updated_at": 1549152000000,
       }
     }
     key="3"

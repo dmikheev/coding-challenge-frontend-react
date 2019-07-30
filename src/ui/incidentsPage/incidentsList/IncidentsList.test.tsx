@@ -12,8 +12,8 @@ it('renders correctly', () => {
         title: 'Test title 1',
         description: 'Detailed test description 1',
         address: 'Test address 1',
-        occurred_at: (new Date(2019, 0, 1)).getTime(),
-        updated_at: (new Date(2019, 1, 1)).getTime(),
+        occurred_at: Date.UTC(2019, 0, 1),
+        updated_at: Date.UTC(2019, 1, 1),
         source: {
           html_url: 'https://test.com/bike/1',
         },
@@ -26,8 +26,8 @@ it('renders correctly', () => {
         title: 'Test title 2',
         description: 'Detailed test description 2',
         address: 'Test address 2',
-        occurred_at: (new Date(2019, 0, 2)).getTime(),
-        updated_at: (new Date(2019, 1, 2)).getTime(),
+        occurred_at: Date.UTC(2019, 0, 2),
+        updated_at: Date.UTC(2019, 1, 2),
         source: {
           html_url: 'https://test.com/bike/2',
         },
@@ -40,8 +40,8 @@ it('renders correctly', () => {
         title: 'Test title 3',
         description: 'Detailed test description 3',
         address: 'Test address 3',
-        occurred_at: (new Date(2019, 0, 3)).getTime(),
-        updated_at: (new Date(2019, 1, 3)).getTime(),
+        occurred_at: Date.UTC(2019, 0, 3),
+        updated_at: Date.UTC(2019, 1, 3),
         source: {
           html_url: 'https://test.com/bike/3',
         },
