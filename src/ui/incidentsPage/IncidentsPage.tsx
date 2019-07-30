@@ -39,11 +39,11 @@ const IncidentsPage: React.FC<IIncidentsPageProps> = ({
     contentHtml = (
       <StyledEmptyContent color="error">Ooops, something went wrong</StyledEmptyContent>
     );
-  } else if (!pageData || pageData.total === 0) {
+  } else if (pageData && pageData.total === 0) {
     contentHtml = (
       <StyledEmptyContent>No results</StyledEmptyContent>
     );
-  } else {
+  } else if (pageData) {
     contentHtml = <IncidentsList data={pageData}/>;
     paginationHtml = (pageData && pageData.total > Constants.ITEMS_PER_PAGE) && (
       <StyledPagination
