@@ -131,8 +131,8 @@ function getFiltersStateFromQueryString(queryString: string): IFiltersState {
   return {
     page: pageParamValue ? Number(pageParamValue) : undefined,
     query: queryParamValue ? decodeURIComponent(queryParamValue) : '',
-    dateFrom: dateFromParamValue ? moment(dateFromParamValue) : null,
-    dateTo: dateToParamValue ? moment(dateToParamValue) : null,
+    dateFrom: dateFromParamValue ? moment(Number(dateFromParamValue)) : null,
+    dateTo: dateToParamValue ? moment(Number(dateToParamValue)) : null,
   };
 }
 
