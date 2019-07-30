@@ -1,6 +1,7 @@
 import { Button, FormControl, InputLabel, OutlinedInput } from '@material-ui/core';
 import { KeyboardDatePicker, KeyboardDatePickerProps } from '@material-ui/pickers';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import moment from 'moment';
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
 import { KeyValues } from '../../../constants/keyValues';
@@ -75,6 +76,26 @@ const StyledQueryFormControl = styled(FormControl)`
   flex-grow: 1;
 `;
 
+const StyledDatePicker: React.FC<KeyboardDatePickerProps> = styled(KeyboardDatePicker)
+  .attrs(() => ({
+    FormHelperTextProps: {
+      classes: {
+        root: 'form-helper-text',
+      },
+    },
+  }))`
+    .form-helper-text {
+      position: absolute;
+      top: 100%;
+    }
+  `;
+
 const DatePicker: React.FC<KeyboardDatePickerProps> = (props) => (
-  <KeyboardDatePicker autoOk={true} format="L" inputVariant="outlined" variant="inline" {...props}/>
+  <StyledDatePicker
+    autoOk={true}
+    format={moment.localeData().longDateFormat('L')}
+    inputVariant="outlined"
+    variant="inline"
+    {...props}
+  />
 );
