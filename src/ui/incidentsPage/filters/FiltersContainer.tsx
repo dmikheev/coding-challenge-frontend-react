@@ -9,53 +9,77 @@ interface IFiltersContainerProps {
   appliedFiltersState: IFilterComponentState;
   onLoadData(filtersState: IFilterComponentState): void;
 }
-const FiltersContainer: React.FC<IFiltersContainerProps> = ({
-  className,
-  appliedFiltersState,
-  onLoadData,
-}) => {
-  const [state, setState] = React.useState<IFilterComponentState>({
-    dateFrom: appliedFiltersState.dateFrom,
-    dateTo: appliedFiltersState.dateTo,
-    query: appliedFiltersState.query,
-  });
-  const onQueryChange = React.useCallback((event: ChangeEvent<HTMLInputElement>) => setState({
-    ...state,
-    query: event.target.value,
-  }), [state]);
-  const onDateFromChange = React.useCallback((date: MaterialUiPickersDate | null) => setState({
-    ...state,
-    dateFrom: date,
-  }), [state]);
-  const onDateToChange = React.useCallback((date: MaterialUiPickersDate | null) => setState({
-    ...state,
-    dateTo: date,
-  }), [state]);
+interface IFiltersContainerState {
+  filtersState: IFilterComponentState;
+}
+export default class FiltersContainer
+  extends React.PureComponent<IFiltersContainerProps, IFiltersContainerState> {
 
-  const onInputEnterPress = React.useCallback(() => {
-    if (areFilterStatesEqual(appliedFiltersState, state)) {
+  constructor(props: IFiltersContainerProps) {
+    super(props);
+
+    this.state = { filtersState: props.appliedFiltersState };
+  }
+
+  public render() {
+    const { className } = this.props;
+    const { filtersState } = this.state;
+
+    return (
+      <Filters
+        className={className}
+        filtersState={filtersState}
+        onQueryChange={this.onQueryChange}
+        onDateFromChange={this.onDateFromChange}
+        onDateToChange={this.onDateToChange}
+        onInputEnterPress={this.onInputEnterPress}
+        onSearchButtonClick={this.onButtonClick}
+      />
+    );
+  }
+
+  private readonly onQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
+    this.setState((prevState) => ({
+      filtersState: {
+        ...prevState.filtersState,
+        query: event.target.value,
+      },
+    }));
+  };
+
+  private readonly onDateFromChange = (date: MaterialUiPickersDate | null) => {
+    this.setState((prevState) => ({
+      filtersState: {
+        ...prevState.filtersState,
+        dateFrom: date,
+      },
+    }));
+  };
+
+  private readonly onDateToChange = (date: MaterialUiPickersDate | null) => {
+    this.setState((prevState) => ({
+      filtersState: {
+        ...prevState.filtersState,
+        dateTo: date,
+      },
+    }));
+  };
+
+  private readonly onInputEnterPress = () => {
+    const { appliedFiltersState, onLoadData } = this.props;
+    const { filtersState } = this.state;
+
+    if (areFilterStatesEqual(appliedFiltersState, filtersState)) {
       return;
     }
 
-    onLoadData(state);
-  }, [appliedFiltersState, state, onLoadData]);
-  const onButtonClick = React.useCallback(() => {
-    onLoadData(state);
-  }, [state, onLoadData]);
+    onLoadData(filtersState);
+  };
 
-  return (
-    <Filters
-      className={className}
-      filtersState={state}
-      onQueryChange={onQueryChange}
-      onDateFromChange={onDateFromChange}
-      onDateToChange={onDateToChange}
-      onInputEnterPress={onInputEnterPress}
-      onSearchButtonClick={onButtonClick}
-    />
-  );
-};
-export default FiltersContainer;
+  private readonly onButtonClick = () => {
+    this.props.onLoadData(this.state.filtersState);
+  };
+}
 
 function areFilterStatesEqual(a: IFilterComponentState, b: IFilterComponentState): boolean {
   return a.query === b.query &&
