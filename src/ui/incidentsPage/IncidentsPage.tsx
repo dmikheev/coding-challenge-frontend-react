@@ -36,7 +36,13 @@ const IncidentsPage: React.FC<IIncidentsPageProps> = ({
   let contentHtml;
   let paginationHtml;
   if (isError) {
-    contentHtml = <ErrorContent/>;
+    contentHtml = (
+      <StyledEmptyContent color="error">Ooops, something went wrong</StyledEmptyContent>
+    );
+  } else if (!pageData || pageData.total === 0) {
+    contentHtml = (
+      <StyledEmptyContent>No results</StyledEmptyContent>
+    );
   } else {
     contentHtml = <IncidentsList data={pageData}/>;
     paginationHtml = (pageData && pageData.total > Constants.ITEMS_PER_PAGE) && (
@@ -70,6 +76,10 @@ const IncidentsPage: React.FC<IIncidentsPageProps> = ({
   );
 };
 export default IncidentsPage;
+
+const StyledEmptyContent = styled(Typography)`
+  padding: 10px;
+`;
 
 const StyledFiltersContainer = styled(FiltersContainer)`
   margin-bottom: 20px;
@@ -108,7 +118,3 @@ const StyledLoader = styled(CircularProgress)`
   display: block;
   margin: 74px auto 78px;
 `;
-
-const ErrorContent: React.FC = () => (
-  <Typography color="error">Ooops, something went wrong</Typography>
-);

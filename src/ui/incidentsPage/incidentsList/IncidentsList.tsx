@@ -6,33 +6,17 @@ import IncidentItem from './incidentItem/IncidentItem';
 
 interface IIncidentsListProps {
   className?: string;
-  data: IGetIncidentsResponseResult | null;
+  data: IGetIncidentsResponseResult;
 }
 const IncidentsList: React.FC<IIncidentsListProps> = ({ className, data }) => {
-  let contentHtml;
-  if (data && data.total > 0) {
-    const total = (data && data.total) || 0;
-    const itemsHtml = data && data.incidents.map((incident) => (
-      <StyledIncidentItem key={incident.id} data={incident}/>
-    ));
-
-    contentHtml = (
-      <React.Fragment>
-        <StyledTotalText>Total: {total}</StyledTotalText>
-        {itemsHtml}
-      </React.Fragment>
-    );
-  } else if (data) {
-    contentHtml = (
-      <NoResultsText>
-        No results
-      </NoResultsText>
-    );
-  }
+  const itemsHtml = data.incidents.map((incident) => (
+    <StyledIncidentItem key={incident.id} data={incident}/>
+  ));
   
   return (
     <div className={className}>
-      {contentHtml}
+      <StyledTotalText>Total: {data.total}</StyledTotalText>
+      {itemsHtml}
     </div>
   );
 };
@@ -47,8 +31,4 @@ const StyledIncidentItem = styled(IncidentItem)`
   &:not(:last-child) {
     margin-bottom: 20px;
   }
-`;
-
-const NoResultsText = styled(Typography)`
-  padding: 10px;
 `;
