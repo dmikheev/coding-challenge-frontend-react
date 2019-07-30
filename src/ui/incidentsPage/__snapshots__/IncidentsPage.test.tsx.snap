@@ -1,0 +1,166 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly during next loadings 1`] = `
+<div>
+  <Styled(FiltersContainer)
+    appliedFiltersState={
+      Object {
+        "dateFrom": "2019-01-01T00:00:00.000Z",
+        "dateTo": "2019-02-01T00:00:00.000Z",
+        "query": "test",
+      }
+    }
+    onLoadData={[Function]}
+  />
+  <styled.div>
+    <IncidentsList
+      data={
+        Object {
+          "incidents": Array [
+            Object {
+              "address": "Test address 1",
+              "description": "Detailed test description 1",
+              "id": 1,
+              "media": Object {
+                "image_url_thumb": "https://test.com/bike/1/photo.jpg",
+              },
+              "occurred_at": 1546300800000,
+              "source": Object {
+                "html_url": "https://test.com/bike/1",
+              },
+              "title": "Test title 1",
+              "updated_at": 1548979200000,
+            },
+          ],
+          "total": 11,
+        }
+      }
+    />
+    <styled.div
+      withBackground={true}
+    >
+      <Styled(WithStyles(ForwardRef(CircularProgress)))
+        size={60}
+      />
+    </styled.div>
+  </styled.div>
+  <Styled(Pagination)
+    activePage={2}
+    itemsCountPerPage={10}
+    onChange={[Function]}
+    totalItemsCount={11}
+  />
+</div>
+`;
+
+exports[`renders correctly during the first loading 1`] = `
+<div>
+  <Styled(FiltersContainer)
+    appliedFiltersState={
+      Object {
+        "dateFrom": null,
+        "dateTo": null,
+        "query": "",
+      }
+    }
+    onLoadData={[Function]}
+  />
+  <styled.div>
+    <styled.div
+      withBackground={false}
+    >
+      <Styled(WithStyles(ForwardRef(CircularProgress)))
+        size={60}
+      />
+    </styled.div>
+  </styled.div>
+</div>
+`;
+
+exports[`renders correctly with results 1`] = `
+<div>
+  <Styled(FiltersContainer)
+    appliedFiltersState={
+      Object {
+        "dateFrom": "2019-01-01T00:00:00.000Z",
+        "dateTo": "2019-02-01T00:00:00.000Z",
+        "query": "test",
+      }
+    }
+    onLoadData={[Function]}
+  />
+  <styled.div>
+    <IncidentsList
+      data={
+        Object {
+          "incidents": Array [
+            Object {
+              "address": "Test address 1",
+              "description": "Detailed test description 1",
+              "id": 1,
+              "media": Object {
+                "image_url_thumb": "https://test.com/bike/1/photo.jpg",
+              },
+              "occurred_at": 1546300800000,
+              "source": Object {
+                "html_url": "https://test.com/bike/1",
+              },
+              "title": "Test title 1",
+              "updated_at": 1548979200000,
+            },
+          ],
+          "total": 11,
+        }
+      }
+    />
+  </styled.div>
+  <Styled(Pagination)
+    activePage={2}
+    itemsCountPerPage={10}
+    onChange={[Function]}
+    totalItemsCount={11}
+  />
+</div>
+`;
+
+exports[`shows "no results" message if incidents data is empty 1`] = `
+<div>
+  <Styled(FiltersContainer)
+    appliedFiltersState={
+      Object {
+        "dateFrom": "2019-01-01T00:00:00.000Z",
+        "dateTo": "2019-02-01T00:00:00.000Z",
+        "query": "test",
+      }
+    }
+    onLoadData={[Function]}
+  />
+  <styled.div>
+    <Styled(WithStyles(ForwardRef(Typography)))>
+      No results
+    </Styled(WithStyles(ForwardRef(Typography)))>
+  </styled.div>
+</div>
+`;
+
+exports[`shows error message on error 1`] = `
+<div>
+  <Styled(FiltersContainer)
+    appliedFiltersState={
+      Object {
+        "dateFrom": "2019-01-01T00:00:00.000Z",
+        "dateTo": "2019-02-01T00:00:00.000Z",
+        "query": "test",
+      }
+    }
+    onLoadData={[Function]}
+  />
+  <styled.div>
+    <Styled(WithStyles(ForwardRef(Typography)))
+      color="error"
+    >
+      Ooops, something went wrong
+    </Styled(WithStyles(ForwardRef(Typography)))>
+  </styled.div>
+</div>
+`;

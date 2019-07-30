@@ -11,7 +11,7 @@ import Pagination from './pagination/Pagination';
 
 const LOADER_SIZE = 60;
 
-interface IIncidentsPageProps {
+export interface IIncidentsPageProps {
   className?: string;
   activePage: number | undefined;
   appliedFiltersState: IFilterComponentState;
