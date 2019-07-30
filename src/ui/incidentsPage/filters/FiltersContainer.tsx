@@ -39,30 +39,30 @@ export default class FiltersContainer
   }
 
   private readonly onQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.setState((prevState) => ({
+    this.setState({
       filtersState: {
-        ...prevState.filtersState,
+        ...this.state.filtersState,
         query: event.target.value,
       },
-    }));
+    });
   };
 
   private readonly onDateFromChange = (date: MaterialUiPickersDate | null) => {
-    this.setState((prevState) => ({
+    this.setState({
       filtersState: {
-        ...prevState.filtersState,
+        ...this.state.filtersState,
         dateFrom: date,
       },
-    }));
+    });
   };
 
   private readonly onDateToChange = (date: MaterialUiPickersDate | null) => {
-    this.setState((prevState) => ({
+    this.setState({
       filtersState: {
-        ...prevState.filtersState,
+        ...this.state.filtersState,
         dateTo: date,
       },
-    }));
+    });
   };
 
   private readonly onInputEnterPress = () => {
