@@ -49,6 +49,7 @@
     "@types/styled-components": "^4.1.18",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
+    "enzyme-to-json": "^3.3.5",
     "fetch-mock": "^7.3.9",
     "node-fetch": "^2.6.0"
   }

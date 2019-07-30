@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly and shows incident data 1`] = `
+<Styled(WithStyles(ForwardRef(Paper)))
+  className="test"
+>
+  <styled.img
+    alt="bike"
+    isPlaceholder={false}
+    src="https://test.com/bike/photo.jpg"
+  />
+  <div>
+    <styled.div>
+      <WithStyles(ForwardRef(Link))
+        href="https://test.com/bike"
+        rel="noopener"
+        target="_blank"
+        variant="h5"
+      >
+        Test title
+      </WithStyles(ForwardRef(Link))>
+    </styled.div>
+    <Styled(WithStyles(ForwardRef(Typography)))>
+      Detailed test description
+    </Styled(WithStyles(ForwardRef(Typography)))>
+    <WithStyles(ForwardRef(Typography))>
+      Test address
+       - 
+      January 1, 2019
+       
+       (Reported on February 2, 2019)
+    </WithStyles(ForwardRef(Typography))>
+  </div>
+</Styled(WithStyles(ForwardRef(Paper)))>
+`;
+
+exports[`renders correctly and shows placeholder image if photo url is empty 1`] = `
+<Styled(WithStyles(ForwardRef(Paper)))
+  className="test"
+>
+  <styled.img
+    alt="bike"
+    isPlaceholder={true}
+    src="bike_photo_placeholder.svg"
+  />
+  <div>
+    <styled.div>
+      <WithStyles(ForwardRef(Link))
+        href="https://test.com/bike"
+        rel="noopener"
+        target="_blank"
+        variant="h5"
+      >
+        Test title
+      </WithStyles(ForwardRef(Link))>
+    </styled.div>
+    <Styled(WithStyles(ForwardRef(Typography)))>
+      Detailed test description
+    </Styled(WithStyles(ForwardRef(Typography)))>
+    <WithStyles(ForwardRef(Typography))>
+      Test address
+       - 
+      January 1, 2019
+       
+       (Reported on February 2, 2019)
+    </WithStyles(ForwardRef(Typography))>
+  </div>
+</Styled(WithStyles(ForwardRef(Paper)))>
+`;
