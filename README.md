@@ -1,3 +1,5 @@
+My demo is available at: https://stolen-bikes.dmikheev.now.sh
+
 # Stolen Bike Index - JOIN Coding Challenge - Frontend (React)
 ![JOIN Stolen Bike Cases](https://github.com/join-com/coding-challenge-frontend-react/raw/master/illustration.png)
 
