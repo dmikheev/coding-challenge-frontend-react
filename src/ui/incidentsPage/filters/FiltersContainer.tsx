@@ -1,6 +1,6 @@
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { Moment } from 'moment';
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, GetDerivedStateFromProps } from 'react';
 import { IFilterComponentState } from '../dataTypes';
 import Filters from './Filters';
 
@@ -10,15 +10,30 @@ interface IFiltersContainerProps {
   onLoadData(filtersState: IFilterComponentState): void;
 }
 interface IFiltersContainerState {
+  prevPropsFiltersState: IFilterComponentState;
   filtersState: IFilterComponentState;
 }
 export default class FiltersContainer
   extends React.PureComponent<IFiltersContainerProps, IFiltersContainerState> {
 
+  public static getDerivedStateFromProps: GetDerivedStateFromProps<IFiltersContainerProps, IFiltersContainerState> = (nextProps, prevState) => {
+    if (nextProps.appliedFiltersState !== prevState.prevPropsFiltersState) {
+      return {
+        prevPropsFiltersState: nextProps.appliedFiltersState,
+        filtersState: nextProps.appliedFiltersState,
+      };
+    }
+
+    return null;
+  };
+
   constructor(props: IFiltersContainerProps) {
     super(props);
 
-    this.state = { filtersState: props.appliedFiltersState };
+    this.state = {
+      prevPropsFiltersState: props.appliedFiltersState,
+      filtersState: props.appliedFiltersState,
+    };
   }
 
   public render() {

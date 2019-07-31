@@ -19,7 +19,7 @@ export interface IIncidentsPageProps {
   isError: boolean;
   isLoading: boolean;
   isFirstLoadDone: boolean;
-  onFilterLoadData(filtersState: IFilterComponentState): void;
+  onFilterLoadDataRequest(filtersState: IFilterComponentState): void;
   onPageChange(page: number): void;
 }
 const IncidentsPage: React.FC<IIncidentsPageProps> = ({
@@ -30,7 +30,7 @@ const IncidentsPage: React.FC<IIncidentsPageProps> = ({
   isLoading,
   isFirstLoadDone,
   pageData,
-  onFilterLoadData,
+  onFilterLoadDataRequest,
   onPageChange,
 }) => {
   let contentHtml;
@@ -65,7 +65,7 @@ const IncidentsPage: React.FC<IIncidentsPageProps> = ({
     <div className={className}>
       <StyledFiltersContainer
         appliedFiltersState={appliedFiltersState}
-        onLoadData={onFilterLoadData}
+        onLoadData={onFilterLoadDataRequest}
       />
       <ContentWrap>
         {contentHtml}

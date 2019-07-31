@@ -6,7 +6,7 @@ import { areObjectsShallowEqual } from '../../utils/shallowEqual';
 import { IFilterComponentState, IFiltersState } from './dataTypes';
 import IncidentsPage from './IncidentsPage';
 
-interface IIncidentsPageContainerProps extends RouteComponentProps {
+export interface IIncidentsPageContainerProps extends RouteComponentProps {
   className?: string;
 }
 interface IIncidentsPageContainerState {
@@ -42,11 +42,26 @@ export default class IncidentsPageContainer
     prevState: Readonly<IIncidentsPageContainerState>,
     snapshot?: any,
   ): void {
-    const { history } = this.props;
+    const { history, location } = this.props;
     const { appliedFilters: newFiltersState } = this.state;
 
+    if (location.search !== prevProps.location.search) {
+      const newQueryStringFiltersState = getFiltersStateFromQueryString(location.search);
+      if (!areFilterStatesEqual(newQueryStringFiltersState, newFiltersState)) {
+        this.setState({
+          appliedFilters: newQueryStringFiltersState,
+        });
+        this.fetchData(newQueryStringFiltersState);
+
+        return;
+      }
+    }
+
     if (newFiltersState !== prevState.appliedFilters) {
-      history.push(`/${getQueryStringFromFiltersState(newFiltersState)}`);
+      const newQueryString = getQueryStringFromFiltersState(newFiltersState);
+      if (newQueryString !== location.search) {
+        history.push(`/${getQueryStringFromFiltersState(newFiltersState)}`);
+      }
     }
   }
 
@@ -69,7 +84,7 @@ export default class IncidentsPageContainer
         isLoading={isLoading}
         isFirstLoadDone={isFirstLoadDone}
         pageData={incidentsData}
-        onFilterLoadData={this.onFilterLoadData}
+        onFilterLoadDataRequest={this.onFilterLoadData}
         onPageChange={this.onPageChange}
       />
     );

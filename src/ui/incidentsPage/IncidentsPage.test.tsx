@@ -35,7 +35,7 @@ const testProps: IIncidentsPageProps = {
   isError: false,
   isLoading: false,
   isFirstLoadDone: true,
-  onFilterLoadData: nop,
+  onFilterLoadDataRequest: nop,
   onPageChange: nop,
 };
 
@@ -61,7 +61,7 @@ it('renders correctly during the first loading', () => {
       isError={false}
       isLoading={true}
       isFirstLoadDone={false}
-      onFilterLoadData={nop}
+      onFilterLoadDataRequest={nop}
       onPageChange={nop}
     />
   );
